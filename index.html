@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OmniAI - Ultimate AI</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #181818; color: white; text-align: center; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 20px auto; padding: 20px; background: #282828; border-radius: 10px; box-shadow: 0 0 10px #6200ea; }
+    input, button, textarea { width: 100%; padding: 10px; margin: 10px 0; border: none; border-radius: 5px; }
+    button { background: #6200ea; color: white; cursor: pointer; transition: 0.3s; }
+    button:hover { background: #4500a5; }
+    .hidden { display: none; }
+    #chatbox { height: 300px; overflow-y: auto; background: #333; padding: 10px; text-align: left; border-radius: 5px; }
+    canvas { background: black; }
+  </style>
+</head>
+<body>
+
+  <!-- LOGIN PAGE -->
+  <div class="container" id="login">
+    <h2>OmniAI Login</h2>
+    <input type="text" id="username" placeholder="Enter Username">
+    <input type="password" id="password" placeholder="Enter Password">
+    <button onclick="login()">Login</button>
+  </div>
+
+  <!-- MAIN MENU -->
+  <div class="container hidden" id="menu">
+    <h2>Welcome to OmniAI</h2>
+    <button onclick="showSection('chat')">AI Chatbot</button>
+    <button onclick="showSection('tools')">AI Tools</button>
+    <button onclick="showSection('game')">Snake Game</button>
+    <button onclick="showSection('lgcse')">LGCSE Books</button>
+  </div>
+
+  <!-- AI CHATBOT -->
+  <div class="container hidden" id="chat">
+    <h2>OmniAI Chat</h2>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Ask anything...">
+    <button onclick="sendMessage()" id="send-btn">Send</button>
+    <button onclick="showSection('menu')">Back</button>
+  </div>
+
+  <!-- AI TOOLS -->
+  <div class="container hidden" id="tools">
+    <h2>AI Tools</h2>
+    <h3>Math Solver</h3>
+    <input type="text" id="mathInput" placeholder="Enter a math problem">
+    <button onclick="solveMath()">Solve</button>
+    <p id="mathSolution"></p>
+
+    <h3>Learn to Code</h3>
+    <textarea id="codeEditor" placeholder="Write JavaScript code here..."></textarea>
+    <button onclick="runCode()">Run</button>
+    <p id="codeOutput"></p>
+
+    <button onclick="showSection('menu')">Back</button>
+  </div>
+
+  <!-- SNAKE GAME -->
+  <div class="container hidden" id="game">
+    <h2>Snake Game</h2>
+    <canvas id="gameCanvas" width="400" height="400"></canvas>
+    <button onclick="showSection('menu')">Back</button>
+  </div>
+
+  <!-- LGCSE BOOKS -->
+  <div class="container hidden" id="lgcse">
+    <h2>Download LGCSE Books</h2>
+    <p><a href="sample-book.pdf" download>Download Sample LGCSE Book</a></p>
+    <button onclick="showSection('menu')">Back</button>
+  </div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "@google/generative-ai": "https://esm.run/@google/generative-ai"
+      }
+    }
+  </script>
+
+  <script type="module" src="./main.js"></script>
+
+  <script>
+    function login() {
+      const user = document.getElementById('username').value;
+      const pass = document.getElementById('password').value;
+      if (user && pass) {
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('menu').classList.remove('hidden');
+      } else {
+        alert("Enter valid credentials!");
+      }
+    }
+
+    function showSection(section) {
+      document.querySelectorAll('.container').forEach(div => div.classList.add('hidden'));
+      document.getElementById(section).classList.remove('hidden');
+    }
+
+    function solveMath() {
+      let problem = document.getElementById("mathInput").value;
+      try {
+        let solution = Function(`"use strict"; return (${problem})`)();
+        document.getElementById("mathSolution").innerText = "Solution: " + solution;
+      } catch {
+        document.getElementById("mathSolution").innerText = "Invalid problem!";
+      }
+    }
+
+    function runCode() {
+      try {
+        let result = Function(`"use strict"; return (${document.getElementById("codeEditor").value})`)();
+        document.getElementById("codeOutput").innerText = "Output: " + result;
+      } catch (error) {
+        document.getElementById("codeOutput").innerText = "Error: " + error;
+      }
+    }
+
+    // Snake Game
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    let snake = [{x: 10, y: 10}], direction = "RIGHT", food = {x: 15, y: 15};
+    function draw() {
+      ctx.fillStyle = "black";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillStyle = "green";
+      snake.forEach(segment => ctx.fillRect(segment.x * 20, segment.y * 20, 20, 20));
+      ctx.fillStyle = "red";
+      ctx.fillRect(food.x * 20, food.y * 20, 20, 20);
+    }
+    function move() {
+      let head = {...snake[0]};
+      if (direction === "RIGHT") head.x += 1;
+      if (direction === "LEFT") head.x -= 1;
+      if (direction === "UP") head.y -= 1;
+      if (direction === "DOWN") head.y += 1;
+      snake.unshift(head);
+      if (head.x === food.x && head.y === food.y) {
+        food = {x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 20)};
+      } else {
+        snake.pop();
+      }
+      draw();
+    }
+    document.addEventListener("keydown", e => { if (e.key.includes("Arrow")) direction = e.key.replace("Arrow", "").toUpperCase(); });
+    setInterval(move, 200);
+  </script>
+
+</body>
+</html>
