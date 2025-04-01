@@ -48,7 +48,7 @@
     <h2>AI Tools</h2>
     <h3>Math Solver</h3>
     <input type="text" id="mathInput" placeholder="Enter a math problem">
-    <button onclick="solveMath()">Solve</button>
+    <button id="solveMath">Solve</button>
     <p id="mathSolution"></p>
 
     <h3>Learn to Code</h3>
@@ -98,16 +98,6 @@
     function showSection(section) {
       document.querySelectorAll('.container').forEach(div => div.classList.add('hidden'));
       document.getElementById(section).classList.remove('hidden');
-    }
-
-    function solveMath() {
-      let problem = document.getElementById("mathInput").value;
-      try {
-        let solution = Function(`"use strict"; return (${problem})`)();
-        document.getElementById("mathSolution").innerText = "Solution: " + solution;
-      } catch {
-        document.getElementById("mathSolution").innerText = "Invalid problem!";
-      }
     }
 
     function runCode() {
